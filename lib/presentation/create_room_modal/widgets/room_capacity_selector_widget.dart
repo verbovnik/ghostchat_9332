@@ -1,0 +1,120 @@
+import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
+
+import '../../../core/app_export.dart';
+import '../../../theme/app_theme.dart';
+
+class RoomCapacitySelectorWidget extends StatelessWidget {
+  final List<Map<String, dynamic>> capacities;
+  final int selectedCapacity;
+  final Function(int) onCapacityChanged;
+
+  const RoomCapacitySelectorWidget({
+    super.key,
+    required this.capacities,
+    required this.selectedCapacity,
+    required this.onCapacityChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 4.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'MAX_USERS:',
+            style: AppTheme.terminalTheme.textTheme.bodyMedium?.copyWith(
+              letterSpacing: 1.0,
+            ),
+          ),
+          SizedBox(height: 1.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(2.w),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: AppTheme.primaryTerminal,
+                width: 1.0,
+              ),
+            ),
+            child: Wrap(
+              spacing: 4.w,
+              runSpacing: 1.h,
+              children: (capacities as List).map<Widget>((dynamic capacity) {
+                final capacityMap = capacity as Map<String, dynamic>;
+                final int value = capacityMap['value'] as int;
+                final String label = capacityMap['label'] as String;
+                final bool isSelected = value == selectedCapacity;
+
+                return GestureDetector(
+                  onTap: () => onCapacityChanged(value),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 3.w,
+                      vertical: 1.h,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: isSelected
+                            ? AppTheme.primaryTerminal
+                            : AppTheme.inactiveTerminal,
+                        width: 1.0,
+                      ),
+                      color: isSelected
+                          ? AppTheme.primaryTerminal.withValues(alpha: 0.1)
+                          : Colors.transparent,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 3.w,
+                          height: 3.w,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppTheme.primaryTerminal,
+                              width: 1.0,
+                            ),
+                            color: isSelected
+                                ? AppTheme.primaryTerminal
+                                : Colors.transparent,
+                          ),
+                          child: isSelected
+                              ? Center(
+                                  child: Container(
+                                    width: 1.w,
+                                    height: 1.w,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: AppTheme.backgroundTerminal,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                        SizedBox(width: 2.w),
+                        Text(
+                          '[$label]',
+                          style: AppTheme.terminalTheme.textTheme.bodyMedium
+                              ?.copyWith(
+                            color: isSelected
+                                ? AppTheme.primaryTerminal
+                                : AppTheme.textMediumEmphasisTerminal,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
