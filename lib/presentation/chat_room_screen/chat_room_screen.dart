@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../widgets/scan_lines_widget.dart';
+import '../../widgets/terminal_glow_widget.dart';
 import './widgets/connection_status_widget.dart';
 import './widgets/message_item_widget.dart';
 import './widgets/room_timer_widget.dart';
@@ -219,171 +221,239 @@ class _ChatRoomScreenState extends State<ChatRoomScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundTerminal,
-      appBar: AppBar(
-        backgroundColor: AppTheme.backgroundTerminal,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: _showExitConfirmation,
-          icon: CustomIconWidget(
-            iconName: 'arrow_back',
-            color: AppTheme.primaryTerminal,
-            size: 24,
-          ),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'ROOM_$_roomId [\$_participantCount_USERS_ACTIVE]',
-              style: AppTheme.terminalTheme.textTheme.titleMedium,
-            ),
-            if (_remainingTime > 0)
-              RoomTimerWidget(
-                remainingTime: _formatRemainingTime(_remainingTime),
-              ),
-          ],
-        ),
-        actions: [
-          ConnectionStatusWidget(isConnected: _isConnected),
-          SizedBox(width: 4.w),
-        ],
-      ),
-      body: Column(
+      body: Stack(
         children: [
-          // Terminal border line
-          Container(
-            width: double.infinity,
-            height: 1,
-            color: AppTheme.primaryTerminal,
+          // Subtle scan lines for active chat
+          ScanLinesWidget(
+            opacity: 0.03,
+            isActive: _isConnected,
           ),
 
-          // Messages area
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                await Future.delayed(Duration(milliseconds: 500));
-                HapticFeedback.lightImpact();
-              },
-              color: AppTheme.primaryTerminal,
-              backgroundColor: AppTheme.backgroundTerminal,
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
-                itemCount: _messages.length + (_typingUsers.isNotEmpty ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == _messages.length) {
-                    return TypingIndicatorWidget(typingUsers: _typingUsers);
-                  }
-
-                  final message = _messages[index];
-                  return MessageItemWidget(
-                    content: message["content"] as String,
-                    timestamp: _formatTime(message["timestamp"] as DateTime),
-                    isSystem: message["isSystem"] as bool? ?? false,
-                    isOwn: message["isOwn"] as bool? ?? false,
-                  );
-                },
-              ),
-            ),
-          ),
-
-          // Input area
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: AppTheme.primaryTerminal, width: 1),
-              ),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
-            child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Character counter
-                  if (_characterCount > 0)
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 1.h),
-                      child: Text(
-                        'CHARS: $_characterCount/$_maxCharacters',
-                        style: AppTheme.terminalTheme.textTheme.bodySmall
-                            ?.copyWith(
-                          color: _characterCount > _maxCharacters * 0.8
-                              ? AppTheme.warningTerminal
-                              : AppTheme.textMediumEmphasisTerminal,
-                        ),
-                      ),
+          // Main chat interface
+          Column(
+            children: [
+              // Enhanced app bar
+              Container(
+                decoration: BoxDecoration(
+                  color: AppTheme.backgroundTerminal,
+                  border: Border(
+                    bottom: BorderSide(
+                      color: AppTheme.primaryTerminal,
+                      width: 1.0,
                     ),
-
-                  // Input row
-                  Row(
-                    children: [
-                      // Terminal prompt
-                      Text(
-                        '>MESSAGE: ',
-                        style: AppTheme.terminalTheme.textTheme.bodyMedium,
-                      ),
-
-                      // Input field
-                      Expanded(
-                        child: TextField(
-                          controller: _messageController,
-                          focusNode: _messageFocusNode,
-                          maxLength: _maxCharacters,
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          textInputAction: TextInputAction.send,
-                          onSubmitted: (_) => _sendMessage(),
-                          style: AppTheme.terminalTheme.textTheme.bodyMedium,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            counterText: '',
-                            hintText: 'type_message_here',
-                            hintStyle: AppTheme
-                                .terminalTheme.textTheme.bodyMedium
-                                ?.copyWith(
-                              color: AppTheme.textDisabledTerminal,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryTerminal.withValues(alpha: 0.1),
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                    child: Row(
+                      children: [
+                        TerminalGlowWidget(
+                          child: IconButton(
+                            onPressed: _showExitConfirmation,
+                            icon: CustomIconWidget(
+                              iconName: 'arrow_back',
+                              color: AppTheme.primaryTerminal,
+                              size: 24,
                             ),
-                            suffixIcon:
-                                _messageFocusNode.hasFocus && _showCursor
+                          ),
+                        ),
+                        SizedBox(width: 2.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ROOM_$_roomId [\$_participantCount_USERS_ACTIVE]',
+                                style: AppTheme
+                                    .terminalTheme.textTheme.titleMedium,
+                              ),
+                              if (_remainingTime > 0)
+                                RoomTimerWidget(
+                                  remainingTime:
+                                      _formatRemainingTime(_remainingTime),
+                                ),
+                            ],
+                          ),
+                        ),
+                        TerminalGlowWidget(
+                          child:
+                              ConnectionStatusWidget(isConnected: _isConnected),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Messages area
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await Future.delayed(Duration(milliseconds: 500));
+                    HapticFeedback.lightImpact();
+                  },
+                  color: AppTheme.primaryTerminal,
+                  backgroundColor: AppTheme.backgroundTerminal,
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                    itemCount:
+                        _messages.length + (_typingUsers.isNotEmpty ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == _messages.length) {
+                        return TypingIndicatorWidget(typingUsers: _typingUsers);
+                      }
+
+                      final message = _messages[index];
+                      return MessageItemWidget(
+                        content: message["content"] as String,
+                        timestamp:
+                            _formatTime(message["timestamp"] as DateTime),
+                        isSystem: message["isSystem"] as bool? ?? false,
+                        isOwn: message["isOwn"] as bool? ?? false,
+                      );
+                    },
+                  ),
+                ),
+              ),
+
+              // Enhanced input area
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: AppTheme.primaryTerminal, width: 1),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryTerminal.withValues(alpha: 0.05),
+                      blurRadius: 8,
+                      offset: Offset(0, -2),
+                    ),
+                  ],
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                child: SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Character counter
+                      if (_characterCount > 0)
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 1.h),
+                          child: Text(
+                            'CHARS: $_characterCount/$_maxCharacters',
+                            style: AppTheme.terminalTheme.textTheme.bodySmall
+                                ?.copyWith(
+                              color: _characterCount > _maxCharacters * 0.8
+                                  ? AppTheme.warningTerminal
+                                  : AppTheme.textMediumEmphasisTerminal,
+                            ),
+                          ),
+                        ),
+
+                      // Input row
+                      Row(
+                        children: [
+                          // Terminal prompt with glow
+                          TerminalGlowWidget(
+                            child: Text(
+                              '>MESSAGE: ',
+                              style:
+                                  AppTheme.terminalTheme.textTheme.bodyMedium,
+                            ),
+                          ),
+
+                          // Input field
+                          Expanded(
+                            child: TextField(
+                              controller: _messageController,
+                              focusNode: _messageFocusNode,
+                              maxLength: _maxCharacters,
+                              maxLines: null,
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.send,
+                              onSubmitted: (_) => _sendMessage(),
+                              style:
+                                  AppTheme.terminalTheme.textTheme.bodyMedium,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                counterText: '',
+                                hintText: 'type_message_here',
+                                hintStyle: AppTheme
+                                    .terminalTheme.textTheme.bodyMedium
+                                    ?.copyWith(
+                                  color: AppTheme.textDisabledTerminal,
+                                ),
+                                suffixIcon: _messageFocusNode.hasFocus &&
+                                        _showCursor
                                     ? Container(
                                         width: 2,
                                         height: 20,
-                                        color: AppTheme.primaryTerminal,
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.primaryTerminal,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AppTheme.primaryTerminal
+                                                  .withValues(alpha: 0.5),
+                                              blurRadius: 2,
+                                              spreadRadius: 1,
+                                            ),
+                                          ],
+                                        ),
                                       )
                                     : null,
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(width: 2.w),
-
-                      // Send button
-                      GestureDetector(
-                        onTap: _sendMessage,
-                        child: Container(
-                          padding: EdgeInsets.all(2.w),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: _messageController.text.trim().isNotEmpty
-                                  ? AppTheme.primaryTerminal
-                                  : AppTheme.inactiveTerminal,
-                              width: 1,
+                              ),
                             ),
                           ),
-                          child: CustomIconWidget(
-                            iconName: 'send',
-                            color: _messageController.text.trim().isNotEmpty
-                                ? AppTheme.primaryTerminal
-                                : AppTheme.inactiveTerminal,
-                            size: 20,
+
+                          SizedBox(width: 2.w),
+
+                          // Enhanced send button
+                          TerminalGlowWidget(
+                            enableGlow:
+                                _messageController.text.trim().isNotEmpty,
+                            child: GestureDetector(
+                              onTap: _sendMessage,
+                              child: Container(
+                                padding: EdgeInsets.all(2.w),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: _messageController.text
+                                            .trim()
+                                            .isNotEmpty
+                                        ? AppTheme.primaryTerminal
+                                        : AppTheme.inactiveTerminal,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: CustomIconWidget(
+                                  iconName: 'send',
+                                  color:
+                                      _messageController.text.trim().isNotEmpty
+                                          ? AppTheme.primaryTerminal
+                                          : AppTheme.inactiveTerminal,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),

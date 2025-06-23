@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../widgets/matrix_rain_widget.dart';
+import '../../widgets/scan_lines_widget.dart';
+import '../../widgets/terminal_glow_widget.dart';
 import './widgets/empty_state_widget.dart';
 import './widgets/room_list_item_widget.dart';
 import './widgets/search_bar_widget.dart';
@@ -227,63 +230,91 @@ class _ChatRoomListScreenState extends State<ChatRoomListScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundTerminal,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Terminal Header
-            TerminalHeaderWidget(
-              isConnected: _isConnected,
-            ),
+      body: Stack(
+        children: [
+          // Subtle matrix rain background
+          MatrixRainWidget(
+            opacity: 0.05,
+            isActive: _isConnected,
+          ),
 
-            // Tab Bar
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: AppTheme.primaryTerminal,
-                    width: 1.0,
+          // Scan lines overlay
+          ScanLinesWidget(
+            opacity: 0.02,
+            isActive: true,
+          ),
+
+          // Main content
+          SafeArea(
+            child: Column(
+              children: [
+                // Terminal Header with glow effect
+                TerminalGlowWidget(
+                  child: TerminalHeaderWidget(
+                    isConnected: _isConnected,
                   ),
                 ),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                tabs: [
-                  Tab(text: 'ROOMS'),
-                  Tab(text: 'SETTINGS'),
-                ],
-              ),
-            ),
 
-            // Tab Bar View
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Rooms Tab
-                  _buildRoomsTab(),
+                // Tab Bar with enhanced styling
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: AppTheme.primaryTerminal,
+                        width: 1.0,
+                      ),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryTerminal.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    tabs: [
+                      Tab(text: 'ROOMS'),
+                      Tab(text: 'SETTINGS'),
+                    ],
+                  ),
+                ),
 
-                  // Settings Tab
-                  _buildSettingsTab(),
-                ],
-              ),
+                // Tab Bar View
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      // Rooms Tab
+                      _buildRoomsTab(),
+
+                      // Settings Tab
+                      _buildSettingsTab(),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: _tabController.index == 0
-          ? FloatingActionButton(
-              onPressed: _createNewRoom,
-              backgroundColor: AppTheme.backgroundTerminal,
-              foregroundColor: AppTheme.primaryTerminal,
-              elevation: 0.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-                side: BorderSide(color: AppTheme.primaryTerminal, width: 1.0),
-              ),
-              child: CustomIconWidget(
-                iconName: 'add',
-                color: AppTheme.primaryTerminal,
-                size: 24,
+          ? TerminalGlowWidget(
+              child: FloatingActionButton(
+                onPressed: _createNewRoom,
+                backgroundColor: AppTheme.backgroundTerminal,
+                foregroundColor: AppTheme.primaryTerminal,
+                elevation: 0.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                  side: BorderSide(color: AppTheme.primaryTerminal, width: 1.0),
+                ),
+                child: CustomIconWidget(
+                  iconName: 'add',
+                  color: AppTheme.primaryTerminal,
+                  size: 24,
+                ),
               ),
             )
           : null,

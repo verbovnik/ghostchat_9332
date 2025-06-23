@@ -3,6 +3,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
 import '../../../theme/app_theme.dart';
+import '../../../widgets/hacker_text_widget.dart';
 
 class TerminalLogoWidget extends StatefulWidget {
   const TerminalLogoWidget({super.key});
@@ -66,7 +67,16 @@ class _TerminalLogoWidgetState extends State<TerminalLogoWidget>
     return Container(
       width: 90.w,
       constraints: BoxConstraints(
-        maxHeight: 30.h,
+        maxHeight: 35.h,
+      ),
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryTerminal.withValues(alpha: 0.2),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
       ),
       child: AnimatedBuilder(
         animation: _typewriterAnimation,
@@ -85,18 +95,30 @@ class _TerminalLogoWidgetState extends State<TerminalLogoWidget>
                     fontSize: 8.sp,
                     fontFamily: 'monospace',
                     height: 1.0,
+                    shadows: [
+                      Shadow(
+                        color: AppTheme.primaryTerminal.withValues(alpha: 0.5),
+                        blurRadius: 2,
+                      ),
+                    ],
                   ),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 2.h),
-                Text(
-                  'ANONYMOUS EPHEMERAL MESSAGING',
+                HackerTextWidget(
+                  text: 'ANONYMOUS EPHEMERAL MESSAGING',
                   style: AppTheme.terminalTheme.textTheme.bodySmall?.copyWith(
                     color: AppTheme.textMediumEmphasisTerminal,
                     fontSize: 10.sp,
                     letterSpacing: 2.0,
+                    shadows: [
+                      Shadow(
+                        color: AppTheme.primaryTerminal.withValues(alpha: 0.3),
+                        blurRadius: 1,
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.center,
+                  animationDuration: Duration(milliseconds: 1500),
                 ),
               ],
             ),

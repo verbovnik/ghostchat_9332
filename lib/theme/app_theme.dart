@@ -5,12 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   AppTheme._();
 
-  // Terminal color scheme - Phosphor Monochrome
-  static const Color primaryTerminal = Color(0xFF00FF00); // Bright phosphor green
+  // Terminal color scheme - Enhanced Hacker Phosphor
+  static const Color primaryTerminal =
+      Color(0xFF00FF00); // Bright phosphor green
   static const Color primaryVariantTerminal = Color(0xFF008000); // Dimmed green
-  static const Color secondaryTerminal = Color(0xFF00FF00); // Consistent with primary
+  static const Color secondaryTerminal =
+      Color(0xFF00FF00); // Consistent with primary
   static const Color backgroundTerminal = Color(0xFF000000); // Pure black
-  static const Color surfaceTerminal = Color(0xFF000000); // Consistent black surfaces
+  static const Color surfaceTerminal =
+      Color(0xFF000000); // Consistent black surfaces
   static const Color errorTerminal = Color(0xFFFF0000); // Classic terminal red
   static const Color warningTerminal = Color(0xFFFFFF00); // Terminal yellow
   static const Color inactiveTerminal = Color(0xFF004000); // Very dark green
@@ -20,10 +23,23 @@ class AppTheme {
   static const Color onSurfaceTerminal = Color(0xFF00FF00); // Green on black
   static const Color onErrorTerminal = Color(0xFF000000); // Black on red
 
+  // Enhanced hacker terminal colors
+  static const Color matrixGreen =
+      Color(0xFF00DD00); // Slightly brighter matrix green
+  static const Color scanlineGreen =
+      Color(0xFF003300); // Very dark green for scan lines
+  static const Color glowGreen =
+      Color(0xFF88FF88); // Light green for glow effects
+  static const Color hackingBlue = Color(0xFF0088FF); // Cyber blue accent
+  static const Color dataOrange = Color(0xFFFF8800); // Data stream orange
+  static const Color criticalRed = Color(0xFFFF4444); // Enhanced red for alerts
+
   // Text emphasis colors for terminal theme
   static const Color textHighEmphasisTerminal = Color(0xFF00FF00); // Full green
-  static const Color textMediumEmphasisTerminal = Color(0xCC00FF00); // 80% green
+  static const Color textMediumEmphasisTerminal =
+      Color(0xCC00FF00); // 80% green
   static const Color textDisabledTerminal = Color(0x61004000); // Very dim green
+  static const Color textGlowTerminal = Color(0xFFAAFFAA); // Glow effect text
 
   /// Terminal theme (primary theme for anonymous messaging)
   static ThemeData terminalTheme = ThemeData(
@@ -256,7 +272,8 @@ class AppTheme {
         borderRadius: BorderRadius.zero,
         side: BorderSide(color: primaryTerminal, width: 1.0),
       ),
-    ), dialogTheme: DialogThemeData(backgroundColor: backgroundTerminal),
+    ),
+    dialogTheme: DialogThemeData(backgroundColor: backgroundTerminal),
   );
 
   /// Light theme (fallback - maintains terminal aesthetic with inverted colors)
@@ -292,7 +309,8 @@ class AppTheme {
     scaffoldBackgroundColor: Color(0xFFFFFFFF),
     cardColor: Color(0xFFFFFFFF),
     dividerColor: backgroundTerminal,
-    textTheme: _buildLightTerminalTextTheme(), dialogTheme: DialogThemeData(backgroundColor: Color(0xFFFFFFFF)),
+    textTheme: _buildLightTerminalTextTheme(),
+    dialogTheme: DialogThemeData(backgroundColor: Color(0xFFFFFFFF)),
   );
 
   /// Dark theme (same as terminal theme for consistency)
