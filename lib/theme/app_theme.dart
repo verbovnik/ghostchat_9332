@@ -84,7 +84,7 @@ class AppTheme {
         color: primaryTerminal,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: backgroundTerminal,
       elevation: 0.0, // No shadows
       shape: RoundedRectangleBorder(
@@ -237,7 +237,7 @@ class AppTheme {
       inactiveTrackColor: inactiveTerminal,
       trackHeight: 2.0,
     ),
-    tabBarTheme: TabBarTheme(
+    tabBarTheme: TabBarThemeData(
       labelColor: primaryTerminal,
       unselectedLabelColor: inactiveTerminal,
       indicatorColor: primaryTerminal,
