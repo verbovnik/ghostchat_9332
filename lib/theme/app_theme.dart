@@ -74,7 +74,7 @@ class AppTheme {
     scaffoldBackgroundColor: backgroundTerminal,
     cardColor: backgroundTerminal,
     dividerColor: primaryTerminal,
-    appBarTheme: AppBarTheme(
+    appBarTheme: AppBarThemeData(
       color: backgroundTerminal,
       foregroundColor: primaryTerminal,
       elevation: 0.0, // No elevation for flat terminal aesthetic
